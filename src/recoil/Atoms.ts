@@ -2,6 +2,7 @@ import { Layout } from "react-grid-layout";
 import { atom } from "recoil";
 import { recoilPersist } from "recoil-persist";
 import { QuickTickCredential, Task, TaskList, TaskListIdTitle, UserInfoResponse } from "../api/Types";
+import { TimerState } from "../components/Timecharging/Timecharging";
 
 const { persistAtom } = recoilPersist();
 
@@ -20,6 +21,12 @@ export const userInfoAtom = atom<UserInfoResponse>({
     key: "userInfo",
     default: undefined,
     effects_UNSTABLE: [persistAtom],
+});
+
+export const timerAtom = atom({
+    key: "timer",
+    // Pass in list id + day as key, then returns
+    default: new Map<string, number>(),
 });
 
 export const tasksAtom = atom<Task[]>({
