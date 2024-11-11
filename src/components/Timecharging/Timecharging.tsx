@@ -1,9 +1,13 @@
-import { Table } from "@mantine/core";
+import { Button, Table } from "@mantine/core";
 import { useState } from "react";
 import Timer from "./Timer";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { TaskList } from "../../api/Types";
-import { taskListsAtom } from "../../recoil/Atoms";
+import { taskListsAtom, timersMapAtom } from "../../recoil/Atoms";
+import "./Timecharging.css"
+import {
+    IconArrowBackUp
+} from "@tabler/icons";
 
 export enum TimerDay {
     Monday = 0,
@@ -24,6 +28,7 @@ export interface TimerState {
 
 export default function Timecharging(): JSX.Element {
     const taskLists = useRecoilValue<TaskList[]>(taskListsAtom);
+    const [timersMap, setTimersMap] = useRecoilState<string | undefined>(timersMapAtom);
 
     const buildRows = () : JSX.Element[] => {
         let rows : JSX.Element[] = [];
@@ -35,19 +40,28 @@ export default function Timecharging(): JSX.Element {
         return rows;
     }
 
+    const onTick = (mapKey: string, seconds: number) => {
+        const newTimers = timersMap ? new Map(JSON.parse(timersMap!)) : new Map<string, number>();
+        newTimers.set(mapKey, seconds)
+        setTimersMap(JSON.stringify([...newTimers]));
+    }
+
+    const onReset = () => {
+        setTimersMap(undefined);
+    }
+
     const buildRowFromTaskLists = (timerDay: TimerDay): JSX.Element[] => {
         const timers : JSX.Element[] = [];
         taskLists.forEach((list) => {
-            timers.push(<Timer name={list.title} id={list.id} day={timerDay}/>);
+            timers.push(<Timer name={list.title} id={list.id} day={timerDay} onTick={onTick}/>);
          });
 
       return timers;
     }
 
-
     return <div className={"timecharging"}>
         Timecharging
-        <Table>
+        <Table width={10}>
         <thead>
             <tr>
             <th>Monday</th>
@@ -61,5 +75,6 @@ export default function Timecharging(): JSX.Element {
         </thead>
         <tbody>{buildRows()}</tbody>
     </Table>
+    <Button leftIcon={<IconArrowBackUp/>} onClick={onReset}>Reset</Button>
    </div>;
 }

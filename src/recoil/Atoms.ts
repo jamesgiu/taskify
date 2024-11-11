@@ -23,10 +23,10 @@ export const userInfoAtom = atom<UserInfoResponse>({
     effects_UNSTABLE: [persistAtom],
 });
 
-export const timerAtom = atom({
-    key: "timer",
-    // Pass in list id + day as key, then returns
-    default: new Map<string, number>(),
+export const timersMapAtom = atom<string | undefined>({
+    key: "timersMap",
+    default: undefined,
+    effects_UNSTABLE: [persistAtom]
 });
 
 export const tasksAtom = atom<Task[]>({
